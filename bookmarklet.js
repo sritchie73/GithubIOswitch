@@ -14,10 +14,22 @@ javascript:(function(){
   } else if (host.split('.')[1] === "github" && host.split('.')[2] === "io") {
     var repo = host.split('.')[0];
     if ((ps.length === 3 && f === "") || (ps.length === 2)) {
-      window.location.href = "http://github.com" + "/" + repo + path
+      window.location.href = "https://github.com" + "/" + repo + path
     } else if (ps.length > 2) {
-      var newpath = path.replace(f, "") + "blob/gh-pages/" + f;
-      window.location.href = "http://github.com" + "/" + repo + newpath
+      console.log(path);
+      var uri = "https://github.com" + "/" + repo + path.replace(f, "") + "blob/gh-pages/";
+      window.location.href = uri + f;
+      var test = $.ajax({url: uri + f.replace(".html", ".Rmd")});
+      if (test["status"] === 200) {
+        window.location.href = uri + f.replace(".html", ".Rmd")
+      } else {
+        var test = $.ajax({url: uri + f.replace(".html", ".md")});
+        if (test["status"] === 200) {
+          window.location.href = uri + f.replace(".html", ".md")
+        } else {
+          window.location.href = uri + f
+        }
+      }
     }
   }
 })();
