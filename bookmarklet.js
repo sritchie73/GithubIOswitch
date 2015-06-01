@@ -19,15 +19,23 @@ javascript:(function(){
       console.log(path);
       var uri = "https://github.com" + "/" + repo + path.replace(f, "") + "blob/gh-pages/";
       window.location.href = uri + f;
-      var test1 = $.ajax({url: uri + f.replace(".html", ".Rmd")});
-      var test2 = $.ajax({url: uri + f.replace(".html", ".md")});
-      if (test1["status"] === 200) {
-        window.location.href = uri + f.replace(".html", ".Rmd")
-      } else if (test2["status"] === 200) {
-        window.location.href = uri + f.replace(".html", ".md")
-      } else {
-        window.location.href = uri + f
-      }
+      $.ajax({
+        url: uri + f.replace(".html", ".Rmd"),
+        error: function(jqXHR, textStatus, errorThrown) {
+          $.ajax({
+            url: uri + f.replace(".html", ".md"),
+            error: function(jqXHR, textStatus, errorThrown) {
+              window.location.href = uri + f.replace(".html", ".md")
+            },
+            success: function(){
+              window.location.href = uri + f
+            }
+          });
+        },
+        success: function(){
+          window.location.href = uri + f.replace(".html", ".Rmd")
+        }
+      })
     }
   }
 })();
